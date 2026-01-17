@@ -21,6 +21,8 @@ $totalNews = $pdo->query("SELECT COUNT(*) FROM news")->fetchColumn();
 $totalPublished = $pdo->query("SELECT COUNT(*) FROM news WHERE status = 'published'")->fetchColumn();
 $totalCategories = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
 $totalDownloads = $pdo->query("SELECT COALESCE(SUM(downloads), 0) FROM attachments")->fetchColumn();
+$totalUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$totalComments = $pdo->query("SELECT COUNT(*) FROM comments")->fetchColumn();
 
 // Latest news
 $latestNews = $pdo->query("
@@ -29,6 +31,24 @@ $latestNews = $pdo->query("
     LEFT JOIN categories c ON n.category_id = c.id 
     ORDER BY n.created_at DESC 
     LIMIT 5
+")->fetchAll();
+
+// Registered users
+$registeredUsers = $pdo->query("
+    SELECT id, username, email, role, created_at 
+    FROM users 
+    ORDER BY created_at DESC 
+    LIMIT 10
+")->fetchAll();
+
+// Recent comments
+$recentComments = $pdo->query("
+    SELECT c.*, u.username, n.title as news_title, n.slug as news_slug
+    FROM comments c 
+    LEFT JOIN users u ON c.user_id = u.id 
+    LEFT JOIN news n ON c.news_id = n.id 
+    ORDER BY c.created_at DESC 
+    LIMIT 10
 ")->fetchAll();
 
 // Flash message
@@ -131,7 +151,7 @@ $flash = getFlash();
             <?php endif; ?>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
                 <!-- Total Berita -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
@@ -139,11 +159,11 @@ $flash = getFlash();
                             <p class="text-gray-500 text-sm">Total Berita</p>
                             <p class="text-3xl font-bold text-gray-800 mt-1"><?= number_format($totalNews) ?></p>
                         </div>
-                        <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-newspaper text-blue-500 text-xl"></i>
+                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-newspaper text-blue-500 text-lg"></i>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center text-sm">
+                    <div class="mt-3 flex items-center text-xs">
                         <span class="text-green-500"><i class="fas fa-check-circle mr-1"></i><?= $totalPublished ?> published</span>
                     </div>
                 </div>
@@ -155,8 +175,8 @@ $flash = getFlash();
                             <p class="text-gray-500 text-sm">Kategori</p>
                             <p class="text-3xl font-bold text-gray-800 mt-1"><?= number_format($totalCategories) ?></p>
                         </div>
-                        <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-folder text-purple-500 text-xl"></i>
+                        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-folder text-purple-500 text-lg"></i>
                         </div>
                     </div>
                 </div>
@@ -165,20 +185,46 @@ $flash = getFlash();
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-500 text-sm">Total Downloads</p>
+                            <p class="text-gray-500 text-sm">Downloads</p>
                             <p class="text-3xl font-bold text-gray-800 mt-1"><?= number_format($totalDownloads) ?></p>
                         </div>
-                        <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-download text-green-500 text-xl"></i>
+                        <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-download text-green-500 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Users -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total User</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-1"><?= number_format($totalUsers) ?></p>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-users text-indigo-500 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Comments -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Komentar</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-1"><?= number_format($totalComments) ?></p>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-comments text-amber-500 text-lg"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Action -->
-                <div class="bg-blue-600 rounded-2xl p-6 text-white">
-                    <p class="text-white/80 text-sm mb-2">Quick Action</p>
-                    <p class="text-xl font-bold mb-4">Tambah Berita Baru</p>
-                    <a href="news/create.php" class="inline-flex items-center space-x-2 px-4 py-2 bg-white text-blue-600 rounded-xl font-medium hover:bg-white/90 transition-colors">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+                    <p class="text-white/80 text-sm mb-1">Quick Action</p>
+                    <p class="text-lg font-bold mb-3">Tambah Berita</p>
+                    <a href="news/create.php" class="inline-flex items-center space-x-2 px-3 py-2 bg-white text-blue-600 rounded-xl font-medium text-sm hover:bg-white/90 transition-colors">
                         <i class="fas fa-plus"></i>
                         <span>Tambah</span>
                     </a>
@@ -266,6 +312,97 @@ $flash = getFlash();
                             <?php endif; ?>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Users & Comments Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                <!-- Registered Users -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-gray-800">
+                                <i class="fas fa-users text-indigo-500 mr-2"></i>User Terdaftar
+                            </h2>
+                            <span class="text-sm text-gray-500"><?= $totalUsers ?> user</span>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                        <?php if (empty($registeredUsers)): ?>
+                        <div class="p-8 text-center text-gray-500">
+                            <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
+                            <p>Belum ada user terdaftar</p>
+                        </div>
+                        <?php else: ?>
+                            <?php foreach ($registeredUsers as $user): ?>
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-indigo-400 to-purple-500 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                                        <?= strtoupper(substr($user['username'], 0, 1)) ?>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center space-x-2">
+                                            <p class="font-medium text-gray-800 truncate"><?= htmlspecialchars($user['username']) ?></p>
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full <?= $user['role'] === 'admin' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' ?>">
+                                                <?= ucfirst($user['role']) ?>
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-gray-500 truncate"><?= htmlspecialchars($user['email']) ?></p>
+                                    </div>
+                                    <div class="text-right text-xs text-gray-400">
+                                        <?= formatDate($user['created_at'], 'short') ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Recent Comments -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-gray-800">
+                                <i class="fas fa-comments text-amber-500 mr-2"></i>Komentar Terbaru
+                            </h2>
+                            <span class="text-sm text-gray-500"><?= $totalComments ?> komentar</span>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                        <?php if (empty($recentComments)): ?>
+                        <div class="p-8 text-center text-gray-500">
+                            <i class="fas fa-comment-slash text-4xl text-gray-300 mb-3"></i>
+                            <p>Belum ada komentar</p>
+                        </div>
+                        <?php else: ?>
+                            <?php foreach ($recentComments as $comment): ?>
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">
+                                        <?= strtoupper(substr($comment['username'] ?? 'U', 0, 1)) ?>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span class="font-medium text-gray-800 text-sm"><?= htmlspecialchars($comment['username'] ?? 'Unknown') ?></span>
+                                            <span class="text-xs text-gray-400"><?= formatDate($comment['created_at'], 'short') ?></span>
+                                            <?php if ($comment['parent_id']): ?>
+                                            <span class="text-xs text-blue-500"><i class="fas fa-reply"></i> Reply</span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($comment['content']) ?></p>
+                                        <a href="../detail.php?slug=<?= $comment['news_slug'] ?>" class="inline-flex items-center text-xs text-primary hover:underline mt-1" target="_blank">
+                                            <i class="fas fa-newspaper mr-1"></i>
+                                            <?= htmlspecialchars(mb_strimwidth($comment['news_title'] ?? 'Berita', 0, 40, '...')) ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </main>

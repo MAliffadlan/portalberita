@@ -164,6 +164,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="register.php" class="font-bold text-gray-900 hover:text-primary transition-colors">Buat Akun Baru</a>
                 </p>
             </div>
+
+            <div class="mt-4 text-center">
+                <a href="index.php" class="inline-flex items-center space-x-2 text-sm text-gray-500 hover:text-primary transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali ke Beranda</span>
+                </a>
+            </div>
         </div>
 
         <!-- Credentials Hint -->
