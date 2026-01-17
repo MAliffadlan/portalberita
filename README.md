@@ -183,7 +183,8 @@ portalberita/
 
 
 ### Admin Dashboard
-![Admin](https://via.placeholder.com/800x400?text=Admin+Dashboard)
+<img width="1366" height="768" alt="Screenshot_20260117_141341" src="https://github.com/user-attachments/assets/fccb6cce-780b-46ee-87ef-d5944e4df42c" />
+
 
 ---
 
