@@ -88,40 +88,7 @@ portalberita/
 
 ---
 
-## 🗄️ Database Schema
 
-```mermaid
-erDiagram
-    users {
-        int id PK
-        varchar username
-        varchar email
-        varchar password
-        enum role
-        timestamp created_at
-    }
-    
-    categories {
-        int id PK
-        varchar name
-        varchar slug
-    }
-    
-    news {
-        int id PK
-        varchar title
-        varchar slug
-        text content
-        text excerpt
-        varchar thumbnail
-        varchar author
-        int category_id FK
-        enum status
-        boolean is_featured
-        int views
-        timestamp published_at
-        timestamp created_at
-    }
     
     attachments {
         int id PK
@@ -212,7 +179,8 @@ erDiagram
 ## 📸 Screenshots
 
 ### Homepage
-![Homepage](https://via.placeholder.com/800x400?text=Homepage+Preview)
+<img width="1366" height="768" alt="Screenshot_20260117_135043" src="https://github.com/user-attachments/assets/3cc5689e-c46b-4b98-963a-7a02b90c1de5" />
+
 
 ### Admin Dashboard
 ![Admin](https://via.placeholder.com/800x400?text=Admin+Dashboard)
