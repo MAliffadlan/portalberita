@@ -169,8 +169,8 @@ portalberita/
 
 | Role  | Username | Password   |
 |-------|----------|------------|
-| Admin | admin    | admin123   |
-| User  | user     | user123    |
+| Admin | admin    | password123   |
+| User  | user     | password123    |
 
 > ⚠️ **Penting:** Ganti password default setelah instalasi!
 
