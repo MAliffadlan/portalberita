@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * Portal Berita - Arsip Berita (Grid Style ala WinPoin)
  */
@@ -88,7 +89,32 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
-                    <a href="admin/index.php" class="text-white hover:text-accent transition-colors" title="Admin Panel"><i class="fas fa-user-circle text-xl"></i></a>
+                    
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 text-white">
+                                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
+                                    <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
+                                </div>
+                                <span class="text-sm font-medium hidden md:inline"><?= htmlspecialchars($_SESSION['username']) ?></span>
+                            </div>
+                            
+                            <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a href="admin/index.php" class="text-white/70 hover:text-white text-sm hidden md:inline" title="Dashboard Admin">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <?php endif; ?>
+                            
+                            <a href="logout.php" class="flex items-center space-x-1 px-3 py-1.5 bg-red-500/80 hover:bg-red-500 text-white text-sm rounded transition-colors" title="Logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="hidden md:inline">Logout</span>
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <a href="login.php" class="text-white hover:text-accent transition-colors font-medium text-sm border border-white/30 px-4 py-1.5 rounded hover:bg-white/10">
+                            Login
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

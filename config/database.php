@@ -5,7 +5,7 @@
  */
 
 // Konfigurasi Database
-define('DB_HOST', '127.0.0.1');
+define('DB_HOST', 'localhost');
 define('DB_NAME', 'portal_berita');
 define('DB_USER', 'root');
 define('DB_PASS', '');
